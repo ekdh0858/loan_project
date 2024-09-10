@@ -7,6 +7,7 @@ import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -25,7 +26,7 @@ public class Counsel extends BaseEntity {
     private long counselId;
 
     @Column(nullable = false,columnDefinition = "datetime COMMENT '신청일자'")
-    private LocalDate appliedAt;
+    private LocalDateTime appliedAt;
 
     @Column(nullable = false, columnDefinition = "varchar(12) COMMENT '상담 요청자'")
     private  String name;
