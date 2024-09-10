@@ -4,12 +4,13 @@ import com.fastcampus.loan.domain.Counsel;
 import com.fastcampus.loan.dto.CounselDTO;
 import com.fastcampus.loan.dto.CounselDTO.Request;
 import com.fastcampus.loan.dto.CounselDTO.Response;
+import com.fastcampus.loan.exception.BaseException;
+import com.fastcampus.loan.exception.ResultType;
 import com.fastcampus.loan.repository.CounselRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Service
@@ -25,5 +26,14 @@ public class CounselServiceImpl implements CounselService{
         Counsel created = counselRepository.save(counsel);
 
         return modelMapper.map(created, Response.class);
+    }
+
+    @Override
+    public Response get(long counselId) {
+        Counsel counsel = counselRepository.findById(counselId).orElseThrow(()->{
+            throw new BaseException(ResultType.SYSTEM_ERROR);
+        });
+
+        return modelMapper.map(counsel, Response.class);
     }
 }

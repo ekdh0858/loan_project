@@ -7,8 +7,12 @@ import com.fastcampus.loan.domain.Counsel;
 import com.fastcampus.loan.dto.CounselDTO;
 import com.fastcampus.loan.dto.CounselDTO.Request;
 import com.fastcampus.loan.dto.CounselDTO.Response;
+import com.fastcampus.loan.exception.BaseException;
+import com.fastcampus.loan.exception.ResultType;
 import com.fastcampus.loan.repository.CounselRepository;
 import com.fastcampus.loan.service.CounselService;
+import com.fastcampus.loan.service.CounselServiceImpl;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
@@ -18,12 +22,14 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
+import java.util.Optional;
+
 @ExtendWith(MockitoExtension.class)
 // Counsel 클래스 외의 영역에서는 모두 성공을 했다는 가정 하에 작성된 테스트
 public class CounselServiceTest {
 
     @InjectMocks
-    private CounselService counselService;
+    private CounselServiceImpl counselService;
 
     @Mock
     private CounselRepository counselRepository;
@@ -57,5 +63,29 @@ public class CounselServiceTest {
         Response actual = counselService.create(request);
 
         assertThat(actual.getName()).isSameAs(entity.getName());
+    }
+
+    @Test
+    void should_ReturnResponseOfExistCounselEntity_When_RequestExistCounselId(){
+        Long findId = 1L;
+
+        Counsel entity = Counsel.builder()
+                .counselId(1L)
+                .build();
+
+        when(counselRepository.findById(findId)).thenReturn(Optional.ofNullable(entity));
+
+        Response actual = counselService.get(1L);
+
+        assertThat(actual.getCounselId()).isEqualTo(findId);
+    }
+
+    @Test
+    void should_ThrowException_When_RequestNotExistCounselId(){
+        Long findId = 2L;
+
+        when(counselRepository.findById(findId)).thenThrow(new BaseException(ResultType.SYSTEM_ERROR));
+
+        Assertions.assertThrows(BaseException.class,()->counselService.get(findId));
     }
 }

@@ -29,6 +29,7 @@ public class CounselDTO {
     @Setter
     @Getter
     public static class Response{
+        private Long counselId;
         private String name;
         private String cellPhone;
         private String email;
