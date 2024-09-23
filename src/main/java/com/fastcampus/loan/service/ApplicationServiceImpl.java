@@ -51,4 +51,15 @@ public class ApplicationServiceImpl implements ApplicationService{
         applicationRepository.save(application);
         return modelMapper.map(application,Response.class);
     }
+
+    @Override
+    public void delete(Long applicationId) {
+        Application application = applicationRepository.findById(applicationId).orElseGet(()->{
+            throw new BaseException(ResultType.SYSTEM_ERROR);
+        });
+
+        application.setIsDeleted(true);
+
+        applicationRepository.save(application);
+    }
 }
