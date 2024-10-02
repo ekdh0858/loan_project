@@ -9,4 +9,5 @@ public interface ApplicationService {
     ApplicationDTO.Response update(Long applicationId, ApplicationDTO.Request request);
     void delete(Long applicationId);
     Boolean acceptTerms(Long applicationId, ApplicationDTO.AcceptTerms request);
+    ApplicationDTO.Response contact(Long applicationId);
 }

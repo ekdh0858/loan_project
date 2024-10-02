@@ -4,6 +4,7 @@ import lombok.*;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -41,6 +42,8 @@ public class ApplicationDTO implements Serializable {
         private BigDecimal hopeAmount;
 
         private LocalDateTime appliedAt;
+
+        private LocalDate contractedAt;
 
         private LocalDateTime createdAt;
 
