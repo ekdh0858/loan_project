@@ -35,4 +35,23 @@ public class BalanceServiceImpl implements BalanceService {
 
         return modelMapper.map(saved, BalanceDTO.Response.class);
     }
+
+    @Override
+    public BalanceDTO.Response update(Long applicationId, BalanceDTO.UpdateRequest request) {
+
+        Balance balance = balanceRepository.findByApplicationId(applicationId).orElseThrow(()->{
+            throw new BaseException(ResultType.SYSTEM_ERROR);
+        });
+
+        BigDecimal beforeEntryAmount = request.getBeforeEntryAmount();
+        BigDecimal afterEntryAmount = request.getAfterEntryAmount();
+        BigDecimal updatedBalance = balance.getBalance();
+
+        updatedBalance = updatedBalance.subtract(beforeEntryAmount).add(afterEntryAmount);
+        balance.setBalance(updatedBalance);
+
+        Balance updated = balanceRepository.save(balance);
+
+        return modelMapper.map(updated, BalanceDTO.Response.class);
+    }
 }
