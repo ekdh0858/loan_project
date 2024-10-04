@@ -44,6 +44,15 @@ public class BalanceServiceImpl implements BalanceService {
     }
 
     @Override
+    public BalanceDTO.Response get(Long applicationId) {
+        Balance balance = balanceRepository.findById(applicationId).orElseThrow(() -> {
+            throw new BaseException(ResultType.SYSTEM_ERROR);
+        });
+
+        return modelMapper.map(balance, BalanceDTO.Response.class);
+    }
+
+    @Override
     public BalanceDTO.Response update(Long applicationId, BalanceDTO.UpdateRequest request) {
 
         Balance balance = balanceRepository.findByApplicationId(applicationId).orElseThrow(()->{
@@ -60,5 +69,38 @@ public class BalanceServiceImpl implements BalanceService {
         Balance updated = balanceRepository.save(balance);
 
         return modelMapper.map(updated, BalanceDTO.Response.class);
+    }
+
+    @Override
+    public BalanceDTO.Response repaymentUpdate(Long applicationId, BalanceDTO.RepaymentRequest request) {
+        Balance balance = balanceRepository.findByApplicationId(applicationId).orElseThrow(()->{
+            throw new BaseException(ResultType.SYSTEM_ERROR);
+        });
+
+        BigDecimal updatedBalance = balance.getBalance();
+        BigDecimal repaymentAmount = request.getRepaymentAmount();
+
+        if(request.getType().equals(BalanceDTO.RepaymentRequest.RepaymentType.ADD)){
+            updatedBalance = updatedBalance.add(repaymentAmount);
+        }else{
+            updatedBalance = updatedBalance.subtract(repaymentAmount);
+        }
+
+        balance.setBalance(updatedBalance);
+
+        Balance updated = balanceRepository.save(balance);
+
+        return modelMapper.map(updated, BalanceDTO.Response.class);
+    }
+
+    @Override
+    public void delete(Long applicationId) {
+        Balance balance = balanceRepository.findByApplicationId(applicationId).orElseThrow(() -> {
+            throw new BaseException(ResultType.SYSTEM_ERROR);
+        });
+
+        balance.setIsDeleted(true);
+
+        balanceRepository.save(balance);
     }
 }
