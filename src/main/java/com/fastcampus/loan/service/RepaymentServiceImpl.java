@@ -60,9 +60,7 @@ public class RepaymentServiceImpl implements RepaymentService {
 
     @Override
     public RepaymentDTO.UpdateResponse update(Long repaymentId, RepaymentDTO.Request request) {
-        Repayment repayment = repaymentRepository.findById(repaymentId).orElseThrow(()->{
-            throw new BaseException(ResultType.SYSTEM_ERROR);
-        });
+        Repayment repayment = repaymentRepository.findById(repaymentId).orElseThrow(()-> new BaseException(ResultType.SYSTEM_ERROR));
 
         Long applicationId = repayment.getApplicationId();
         BigDecimal beforeRepaymentAmount = repayment.getRepaymentAmount();
@@ -88,6 +86,25 @@ public class RepaymentServiceImpl implements RepaymentService {
                 .createdAt(repayment.getCreatedAt())
                 .updatedAt(repayment.getUpdatedAt())
                 .build();
+    }
+
+    @Override
+    public void delete(Long repaymentId) {
+        Repayment repayment = repaymentRepository.findById(repaymentId).orElseThrow(()->{
+            throw new BaseException(ResultType.SYSTEM_ERROR);
+        });
+
+        Long applicationId = repayment.getApplicationId();
+        BigDecimal removeRepaymentAmount = repayment.getRepaymentAmount();
+
+        balanceService.repaymentUpdate(applicationId,
+                BalanceDTO.RepaymentRequest.builder()
+                        .repaymentAmount(removeRepaymentAmount)
+                        .type(BalanceDTO.RepaymentRequest.RepaymentType.ADD)
+                        .build());
+
+        repayment.setIsDeleted(true);
+        repaymentRepository.save(repayment);
     }
 
     private boolean isRepayableApplication(Long applicationId) {
