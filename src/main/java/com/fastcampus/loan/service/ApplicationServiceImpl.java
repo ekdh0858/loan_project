@@ -10,12 +10,14 @@ import com.fastcampus.loan.exception.BaseException;
 import com.fastcampus.loan.exception.ResultType;
 import com.fastcampus.loan.repository.AcceptTermsRepository;
 import com.fastcampus.loan.repository.ApplicationRepository;
+import com.fastcampus.loan.repository.JudgmentRepository;
 import com.fastcampus.loan.repository.TermsRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -28,6 +30,7 @@ public class ApplicationServiceImpl implements ApplicationService{
     private final TermsRepository termsRepository;
     private final ModelMapper modelMapper;
     private final AcceptTermsRepository acceptTermsRepository;
+    private final JudgmentRepository judgmentRepository;
 
     @Override
     public Response create(Request request) {
@@ -106,5 +109,26 @@ public class ApplicationServiceImpl implements ApplicationService{
             acceptTermsRepository.save(accepted);
         }
         return true;
+    }
+
+    @Override
+    public Response contact(Long applicationId) {
+        Application application = applicationRepository.findById(applicationId).orElseGet(()->{
+            throw new BaseException(ResultType.SYSTEM_ERROR);
+        });
+
+        judgmentRepository.findByApplicationId(applicationId).orElseThrow(()->{
+            throw new BaseException(ResultType.SYSTEM_ERROR);
+        });
+
+        if(application.getApprovalAmount()==null
+                || application.getApprovalAmount().compareTo(BigDecimal.ZERO)==0){
+            throw new BaseException(ResultType.SYSTEM_ERROR);
+        }
+
+        application.setContractedAt(LocalDateTime.now());
+        applicationRepository.save(application);
+
+        return null;
     }
 }

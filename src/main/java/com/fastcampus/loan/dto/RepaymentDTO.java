@@ -4,46 +4,30 @@ import lombok.*;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
-public class ApplicationDTO implements Serializable {
+public class RepaymentDTO implements Serializable {
 
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
-    @Setter
     @Getter
+    @Setter
     public static class Request{
-        private String name;
-
-        private String cellPhone;
-
-        private String email;
-
-        private BigDecimal hopeAmount;
+        private BigDecimal repaymentAmount;
     }
 
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
-    @Setter
     @Getter
+    @Setter
     public static class Response{
         private Long applicationId;
 
-        private String name;
+        private BigDecimal repaymentAmount;
 
-        private String cellPhone;
-
-        private String email;
-
-        private BigDecimal hopeAmount;
-
-        private LocalDateTime appliedAt;
-
-        private LocalDate contractedAt;
+        private BigDecimal balance;
 
         private LocalDateTime createdAt;
 
@@ -53,25 +37,34 @@ public class ApplicationDTO implements Serializable {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
-    @Setter
     @Getter
-    public static class AcceptTerms{
-        List<Long> acceptTermsIds;
-    }
-
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
     @Setter
-    @Getter
-    public static class GrantAmount{
+    public static class UpdateResponse{
         private Long applicationId;
 
-        private BigDecimal approvalAmount;
+        private BigDecimal beforeRepaymentAmount;
+
+        private BigDecimal afterRepaymentAmount;
+
+        private BigDecimal balance;
 
         private LocalDateTime createdAt;
 
         private LocalDateTime updatedAt;
     }
 
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    @Getter
+    @Setter
+    public static class ListResponse{
+        private Long repaymentId;
+
+        private BigDecimal repaymentAmount;
+
+        private LocalDateTime createdAt;
+
+        private LocalDateTime updatedAt;
+    }
 }
